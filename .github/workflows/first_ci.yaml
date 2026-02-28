@@ -50,3 +50,15 @@ jobs:
           push: true
           cache-from: type=registry,ref=${{ secrets.DOCKER_USER }}/weather-backend:latest
           cache-to: type=inline
+
+      - name: Update image tag in helm-infra repo
+        if: github.event_name == 'push'
+        run: |
+          git clone https://x-access-token:${{ secrets.HELM_INFRA_TOKEN }}@github.com/itamardavideliyahu-beep/weather-helm-infra.git
+          cd weather-helm-infra
+          sed -i "s/^  tag:.*/  tag: \"${{ github.sha }}\"/" weather-helm-infra/charts/weather-backend/values.yaml
+          git config user.email "ci-bot@github.com"
+          git config user.name "CI Bot"
+          git add weather-helm-infra/charts/weather-backend/values.yaml
+          git commit -m "ci: update weather-backend image tag to ${{ github.sha }}"
+          git push
