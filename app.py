@@ -28,6 +28,7 @@ def home():
     return jsonify({
         'status': 'running',
         'service': 'Weather Backend API',
+        'author': 'Itamar David Eliyahu',
         'available_cities': list(CITIES.keys())
     })
 
@@ -77,6 +78,7 @@ def get_weather(city):
         weather_data = {
             'city': city_name,
             'temperature': round(data['main']['temp'], 1),
+            'feels_like': round(data['main']['feels_like'], 1),
             'description': data['weather'][0]['description'].capitalize(),
             'humidity': data['main']['humidity'],
             'wind_speed': round(data['wind']['speed'], 1)
