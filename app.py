@@ -19,7 +19,9 @@ CITIES = {
     'newyork': 'New York',
     'sydney': 'Sydney',
     'capetown': 'Cape Town',
-    'bangkok': 'Bangkok'
+    'bangkok': 'Bangkok',
+    'telaviv': 'Tel Aviv',
+    'jerusalem': 'Jerusalem'
 }
 
 @app.route('/')
