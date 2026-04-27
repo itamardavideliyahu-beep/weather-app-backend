@@ -3,6 +3,7 @@ from flask_cors import CORS
 import requests
 import os
 from dotenv import load_dotenv
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
 # Load environment variables
 load_dotenv()
@@ -23,6 +24,14 @@ CITIES = {
     'telaviv': 'Tel Aviv',
     'jerusalem': 'Jerusalem'
 }
+
+REQUESTS_TOTAL = Counter('weather_requests_total', 'Total weather API requests', ['city'])
+
+@app.route('/metrics')
+def metrics():
+    """Prometheus metrics endpoint"""
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
+
 
 @app.route('/')
 def home():
@@ -85,7 +94,8 @@ def get_weather(city):
             'humidity': data['main']['humidity'],
             'wind_speed': round(data['wind']['speed'], 1)
         }
-        
+
+        REQUESTS_TOTAL.labels(city=city_lower).inc()
         return jsonify(weather_data)
     
     except requests.exceptions.Timeout:
