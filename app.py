@@ -9,7 +9,20 @@ from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend communication
+
+
+def get_allowed_origins():
+    """
+    Parse FRONTEND_ORIGINS env var as comma-separated origins.
+    Falls back to wildcard for local/dev convenience.
+    """
+    origins = os.getenv("FRONTEND_ORIGINS", "*").strip()
+    if origins == "*":
+        return "*"
+    return [origin.strip() for origin in origins.split(",") if origin.strip()]
+
+
+CORS(app, resources={r"/*": {"origins": get_allowed_origins()}})
 
 # OpenWeatherMap API configuration
 API_KEY = os.getenv('OPENWEATHER_API_KEY')
@@ -123,4 +136,5 @@ def get_weather(city):
         }), 502
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.getenv("PORT", "5000"))
+    app.run(host='0.0.0.0', port=port, debug=False)

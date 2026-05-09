@@ -19,5 +19,5 @@ EXPOSE 5000
 # Set environment variable for Flask
 ENV FLASK_APP=app.py
 
-# Run the application
-CMD ["python", "app.py"]
+# Run the application in production mode (Railway provides PORT)
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --threads 4 --timeout 60 app:app"]
